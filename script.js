@@ -4,9 +4,15 @@ const scoreDisplay = document.getElementById("score");
 const livesDisplay = document.getElementById("lives");
 const message = document.getElementById("message");
 const resetButton = document.getElementById("reset");
+const canImage = new Image();
 
 const W = canvas.width;
 const H = canvas.height;
+
+canImage.addEventListener("error", () => {
+  console.error("Could not load the can paddle image at img/can.png.");
+});
+canImage.src = "img/can.png";
 
 const bucket = {
   x: 220,
@@ -107,19 +113,19 @@ function update(dt) {
 function render() {
   ctx.clearRect(0, 0, W, H);
 
-  // Draw bucket
-  if (damageFlash > 0) {
-    ctx.fillStyle = "#F5402C";
-  } else {
-    ctx.fillStyle = "#FFC907";
-  }
+  const canX = bucket.x - 10;
+  const canY = bucket.y - 20;
 
-  ctx.fillRect(
-    bucket.x,
-    bucket.y,
-    bucket.width,
-    bucket.height
-  );
+  if (canImage.complete && canImage.naturalWidth > 0) {
+    ctx.drawImage(canImage, canX, canY, 80, 80);
+
+    if (damageFlash > 0) {
+      ctx.globalCompositeOperation = "source-atop";
+      ctx.fillStyle = "rgba(245, 64, 44, 0.6)";
+      ctx.fillRect(canX, canY, 80, 80);
+      ctx.globalCompositeOperation = "source-over";
+    }
+  }
 
   // Draw droplets
   for (const drop of droplets) {
